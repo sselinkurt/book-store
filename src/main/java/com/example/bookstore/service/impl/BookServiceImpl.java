@@ -5,23 +5,32 @@ import com.example.bookstore.repository.BookRepository;
 import com.example.bookstore.service.BookService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class BookServiceImpl implements BookService {
-    private final BookRepository repository;
 
-    public BookServiceImpl(BookRepository repository) {
-        this.repository = repository;
+    private final BookRepository bookRepository;
+
+    public BookServiceImpl(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @Override
     public void add(Book book) {
-        repository.save(book);
+        bookRepository.save(book);
     }
 
+
     @Override
-    public List<Book> getBooks() {
-        return repository.findAll();
-    }
+    public void updateStockCount(UUID bookId, int newStockCount) throws Exception {
+        Optional<Book> book = bookRepository.findById(bookId);
+        if (!book.isPresent()) {
+            throw new Exception();
+        }
+        Book dbBook = book.get();
+        dbBook.setQuantity(newStockCount);
+        bookRepository.save(dbBook);
+  }
 }

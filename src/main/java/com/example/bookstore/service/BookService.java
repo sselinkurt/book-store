@@ -2,11 +2,12 @@ package com.example.bookstore.service;
 
 import com.example.bookstore.model.Book;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface BookService {
 
     void add(Book book);
 
-    List<Book> getBooks();
+    void updateStockCount(UUID uuid, int newStockCount) throws Exception;
+
 }

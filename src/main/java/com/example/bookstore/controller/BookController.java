@@ -2,42 +2,47 @@ package com.example.bookstore.controller;
 
 import com.example.bookstore.model.Book;
 import com.example.bookstore.service.BookService;
+import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import javax.validation.constraints.Min;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/book")
 public class BookController {
 
     @Autowired
-    private BookService service;
+    private BookService bookService;
 
-    @PostMapping()
-    public ResponseEntity<?> add(@RequestBody Book book) {
+    @PostMapping
+    public ResponseEntity addNewBook(@RequestBody @NotNull Book book) {
         try {
-            service.add(book);
-            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Book successfully saved.");
+            bookService.add(book);
+            return new ResponseEntity("Book successfully saved.", HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body("FAIL");
+            return new ResponseEntity("Book request failed!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> getBooks() {
+    @PutMapping
+    public ResponseEntity updateStockCount(@RequestParam @NotNull UUID bookId,
+                                              @RequestParam @Min(0) int newStockCount) {
         try {
-            List<Book> books = service.getBooks();
-            return new ResponseEntity<>(books, HttpStatus.OK);
+            bookService.updateStockCount(bookId, newStockCount);
+            return new ResponseEntity("Stock count updated successfully.", HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().contentType(MediaType.TEXT_PLAIN).body("FAIL");
+            return new ResponseEntity("Stock count could not updated!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

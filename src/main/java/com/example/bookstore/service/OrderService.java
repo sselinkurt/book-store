@@ -1,11 +1,14 @@
 package com.example.bookstore.service;
 
 import com.example.bookstore.model.Order;
+import com.example.bookstore.model.OrderRequest;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface OrderService {
-    void add(Order order);
 
-    List<Order> getCustomersOrders();
+    void addNewOrder(OrderRequest orderRequest) throws Exception;
+
+    Order getOrderById(UUID orderId) throws Exception;
+
 }
