@@ -35,6 +35,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private void applyCustomerValidation(Customer customer) throws BadRequestException {
+        if (customer.getEmail().isBlank()) {
+            throw new BadRequestException("Email is mandatory to register!");
+        }
         List<Customer> customers = customerRepository.findCustomersByEmail(customer.getEmail());
         if (!customers.isEmpty()) {
             throw new BadRequestException("Customer with this email already exists!");

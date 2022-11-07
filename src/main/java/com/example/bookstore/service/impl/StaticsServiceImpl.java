@@ -2,7 +2,6 @@ package com.example.bookstore.service.impl;
 
 import com.example.bookstore.model.Order;
 import com.example.bookstore.model.OrderDetail;
-import com.example.bookstore.repository.BookRepository;
 import com.example.bookstore.repository.OrderRepository;
 import com.example.bookstore.service.StaticsService;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,11 @@ public class StaticsServiceImpl implements StaticsService {
     public Map<String, Map<String, Object>> getStaticsReport() {
         Map<String, Map<String, Object>> statics = new HashMap<>();
 
-        Map<Integer, List<Order>> ordersByMonth = orderRepository.findAll().stream().collect(Collectors.groupingBy(Order::getOrderMonth));
+        List<Order> orders = orderRepository.findAll();
+        if (orders.isEmpty()) {
+            return statics;
+        }
+        Map<Integer, List<Order>> ordersByMonth = orders.stream().collect(Collectors.groupingBy(Order::getOrderMonth));
         for(Map.Entry<Integer, List<Order>> entry: ordersByMonth.entrySet()) {
             Map<String, Object> values = new HashMap<>();
             values.put("Total Order Count", entry.getValue().size());

@@ -1,11 +1,11 @@
 package com.example.bookstore.controller;
 
+import com.example.bookstore.exception.BadRequestException;
 import com.example.bookstore.model.Book;
 import com.example.bookstore.service.BookService;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +29,8 @@ public class BookController {
         try {
             bookService.add(book);
             return new ResponseEntity("Book successfully saved.", HttpStatus.OK);
+        } catch (BadRequestException badRequestException) {
+            return new ResponseEntity(badRequestException.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity("Book request failed!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
