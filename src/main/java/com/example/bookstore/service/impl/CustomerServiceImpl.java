@@ -1,5 +1,6 @@
 package com.example.bookstore.service.impl;
 
+import com.example.bookstore.exception.BadRequestException;
 import com.example.bookstore.model.Customer;
 import com.example.bookstore.model.Order;
 import com.example.bookstore.repository.CustomerRepository;
@@ -13,17 +14,18 @@ import java.util.UUID;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerRepository repository;
+    private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
 
     public CustomerServiceImpl(CustomerRepository repository, OrderRepository orderRepository) {
-        this.repository = repository;
+        this.customerRepository = repository;
         this.orderRepository = orderRepository;
     }
 
     @Override
-    public void add(Customer customer) {
-        repository.save(customer);
+    public void add(Customer customer) throws BadRequestException{
+        applyCustomerValidation(customer);
+        customerRepository.save(customer);
     }
 
     @Override
@@ -32,5 +34,10 @@ public class CustomerServiceImpl implements CustomerService {
         return orders;
     }
 
-
+    private void applyCustomerValidation(Customer customer) throws BadRequestException {
+        List<Customer> customers = customerRepository.findCustomersByEmail(customer.getEmail());
+        if (!customers.isEmpty()) {
+            throw new BadRequestException("Customer with this email already exists!");
+        }
+    }
 }
